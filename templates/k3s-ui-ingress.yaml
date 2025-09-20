@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: k3s-ui
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - johnwalkers.com
+      secretName: johnwalkers-com-tls
+  rules:
+    - host: johnwalkers.com
+      http:
+        paths:
+          - path: /k3s
+            pathType: Prefix
+            backend:
+              service:
+                name: k3s-ui
+                port:
+                  number: 80

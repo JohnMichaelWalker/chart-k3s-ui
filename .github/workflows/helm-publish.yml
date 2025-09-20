@@ -1,0 +1,38 @@
+name: Publish Helm Chart to Docker Hub OCI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: oci://docker.io/johnwalker333
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.3.0
+
+      - name: Login to Docker Hub OCI
+        run: |
+          echo ${{ secrets.DOCKERHUB_TOKEN }} | \
+          helm registry login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin docker.io
+
+      - name: Package chart
+        run: |
+          CHART_NAME=$(grep '^name:' "Chart.yaml" | awk '{print $2}')
+          VERSION=$(grep '^version:' "Chart.yaml" | awk '{print $2}')
+          helm package . --destination .
+          echo "PACKAGED_CHART=${CHART_NAME}-${VERSION}.tgz" >> "$GITHUB_ENV"
+
+      - name: Push chart to Docker Hub
+        run: |
+          helm push "${PACKAGED_CHART}" "${REGISTRY}"
+        
+
+  

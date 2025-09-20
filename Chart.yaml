@@ -1,0 +1,5 @@
+apiVersion: v2
+name: k3s-ui
+description: UI for k3s project
+type: application
+version: 0.0.1
