@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: k3s-ui
-          image: johnwalker333/k3s-ui
+          image: johnwalker333/k3s-ui:latest
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 80
